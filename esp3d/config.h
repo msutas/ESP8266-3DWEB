@@ -27,7 +27,7 @@
 //comment to disable
 //MDNS_FEATURE: this feature allow  type the name defined
 //in web browser by default: http:\\esp8266.local and connect
-//#define MDNS_FEATURE
+#define MDNS_FEATURE
 
 //SSDD_FEATURE: this feature is a discovery protocol, supported on Windows out of the box
 #define SSDP_FEATURE
@@ -51,7 +51,7 @@
 #define RECOVERY_FEATURE
 
 //FIRMWARE_TARGET: the targeted FW, can be REPETIER (Original Repetier)/ REPETIER4DV (Repetier for Davinci) / MARLIN (Marlin)/ SMOOTHIEWARE (Smoothieware)
-#define FIRMWARE_TARGET REPETIER4DV
+#define FIRMWARE_TARGET MARLIN
 
 
 #ifndef CONFIG_h
@@ -101,9 +101,9 @@
 
 //default values
 #define DEFAULT_WIFI_MODE			AP_MODE
-const char DEFAULT_SSID []  PROGMEM =		"ESP8266";
+const char DEFAULT_SSID []  PROGMEM =		"RIGID3D";
 const char DEFAULT_PASSWORD [] PROGMEM =	"12345678";
-#define DEFAULT_IP_MODE				STATIC_IP_MODE
+#define DEFAULT_IP_MODE				DHCP_MODE
 const byte DEFAULT_IP_VALUE[]   =	        {192, 168, 0, 1};
 const byte DEFAULT_MASK_VALUE[]  =	        {255, 255, 255, 0};
 #define DEFAULT_GATEWAY_VALUE   	        DEFAULT_IP_VALUE
@@ -119,9 +119,9 @@ const char M117_[] PROGMEM =		"M117 ";
 const int DEFAULT_WEB_PORT =			80;
 const int DEFAULT_DATA_PORT =			8888;
 #define DEFAULT_REFRESH_PAGE_TIME			3
-const int  DEFAULT_XY_FEEDRATE=1000;
-const int  DEFAULT_Z_FEEDRATE	=100;
-const int  DEFAULT_E_FEEDRATE=400;
+const int  DEFAULT_XY_FEEDRATE=3000;
+const int  DEFAULT_Z_FEEDRATE	=600;
+const int  DEFAULT_E_FEEDRATE=60;
 const char DEFAULT_ADMIN []  PROGMEM =	"admin";
 
 //sizes
