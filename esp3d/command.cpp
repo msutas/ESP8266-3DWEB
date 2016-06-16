@@ -37,7 +37,8 @@ void COMMAND::execute_command(int cmd,String cmd_params)
     switch(cmd) {
         byte mode;
     case 800:
-        Serial.println("\nCommand received");
+        Serial.print("\nFW version:");
+        Serial.println(FW_VERSION);
         break;
     case 100:
         if(!CONFIG::write_string(EP_SSID,cmd_params.c_str())) {
@@ -131,24 +132,42 @@ void COMMAND::execute_command(int cmd,String cmd_params)
 void COMMAND::check_command(String buffer)
 {
     static bool bfileslist=false;
+    String buffer2;
     static uint32_t start_list=0;
+    //if SD list is not on going
     if (!bfileslist) {
+		//check if command is a start of SD File list
         int filesstart = buffer.indexOf("Begin file list");
+        //yes it is file list starting to be displayed
         if (filesstart>-1) {
-            Serial.print("Starting");
+			//init time out
             start_list=system_get_time();
+            //set file list started
             bfileslist=true;
+            //clear current list
             web_interface->fileslist.clear();
+            //block any new output to serial from ESP to avoid pollution
+            (web_interface->blockserial) = true;
+            return;
         }
         int Tpos = buffer.indexOf("T:");
         int Xpos = buffer.indexOf("X:");
         int Ypos = buffer.indexOf("Y:");
         int Zpos = buffer.indexOf("Z:");
-        int Speedpos = buffer.indexOf("SpeedMultiply:");
+#if FIRMWARE_TARGET == SMOOTHIEWARE
+        int Speedpos = buffer.indexOf("Speed factor at ");
+        int Flowpos = buffer.indexOf("Flow rate at ");
+        int Errorpos= buffer.indexOf("error:");
+        int Infopos= buffer.indexOf("info:");
+        int Statuspos= buffer.indexOf("warning:");
+#else
+		int Speedpos = buffer.indexOf("SpeedMultiply:");
         int Flowpos = buffer.indexOf("FlowMultiply:");
         int Errorpos= buffer.indexOf("Error:");
         int Infopos= buffer.indexOf("Info:");
         int Statuspos= buffer.indexOf("Status:");
+#endif
+
 #ifdef SERIAL_COMMAND_FEATURE
         String ESP_Command;
         int ESPpos = buffer.indexOf("[ESP");
@@ -188,11 +207,28 @@ void COMMAND::check_command(String buffer)
         }
         //Speed
         if (Speedpos>-1) {
-            web_interface->answer4M220=buffer.substring(Speedpos+14);
+			//get just the value
+			
+#if FIRMWARE_TARGET == SMOOTHIEWARE
+			buffer2 =buffer.substring(Speedpos+16);
+			int p2 = buffer2.indexOf(".");
+            web_interface->answer4M220=buffer2.substring(0,p2);
+#else
+			web_interface->answer4M220=buffer.substring(Speedpos+14);
+#endif
+            
         }
         //Flow
         if (Flowpos>-1) {
-            web_interface->answer4M221=buffer.substring(Flowpos+13);
+			//get just the value
+           
+#if FIRMWARE_TARGET == SMOOTHIEWARE
+			buffer2 =buffer.substring(Flowpos+13);
+			int p2 = buffer2.indexOf(".");
+            web_interface->answer4M221=buffer2.substring(0,p2);
+#else
+			web_interface->answer4M221=buffer.substring(Flowpos+13);
+#endif
         }
         //Error
         if (Errorpos>-1 && !(buffer.indexOf("Format error")!=-1 || buffer.indexOf("wait")==Errorpos+6) ) {
@@ -204,18 +240,25 @@ void COMMAND::check_command(String buffer)
         }
         //Status
         if (Statuspos>-1) {
-            (web_interface->status_msg).add(buffer.substring(Statuspos+7).c_str());
+#if FIRMWARE_TARGET == SMOOTHIEWARE
+            (web_interface->status_msg).add(buffer.substring(Statuspos+8).c_str());
+#else
+			(web_interface->status_msg).add(buffer.substring(Statuspos+7).c_str());
+#endif
         }
-    } else {
+    } else { //listing file is on going
+		//check if we are too long 
         if ((system_get_time()-start_list)>30000000) { //timeout in case of problem
             bfileslist=false;
-            Serial.print("time out");
+            (web_interface->blockserial) = false; //release serial
         } else {
+			//check if this is the end
             if (buffer.indexOf("End file list")>-1) {
-                Serial.print("Ending");
                 bfileslist=false;
+                (web_interface->blockserial) = false; 
             } else {
-                Serial.print(buffer);
+                //Serial.print(buffer);
+                //add list to buffer
                 web_interface->fileslist.add(buffer);
             }
         }

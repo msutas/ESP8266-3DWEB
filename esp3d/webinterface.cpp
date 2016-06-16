@@ -821,18 +821,18 @@ void handle_web_interface_home()
 
     //network
     KeysList.add(FPSTR(KEY_NET_PHY));
-    if (wifi_get_phy_mode()==PHY_MODE_11B) {
+    if (WiFi.getPhyMode()==WIFI_PHY_MODE_11B) {
         ValuesList.add(FPSTR(VALUE_11B));
-    } else if (wifi_get_phy_mode()==PHY_MODE_11G) {
+    } else if (WiFi.getPhyMode()==WIFI_PHY_MODE_11G) {
         ValuesList.add(FPSTR(VALUE_11G));
     } else {
         ValuesList.add(FPSTR(VALUE_11N));
     }
     //sleep mode
     KeysList.add(FPSTR(KEY_SLEEP_MODE));
-    if (wifi_get_sleep_type()==NONE_SLEEP_T) {
+    if (WiFi.getSleepMode()==WIFI_NONE_SLEEP) {
         ValuesList.add(FPSTR(VALUE_NONE));
-    } else if (wifi_get_sleep_type()==LIGHT_SLEEP_T) {
+    } else if (WiFi.getSleepMode()==WIFI_LIGHT_SLEEP) {
         ValuesList.add(FPSTR(VALUE_LIGHT));
     } else {
         ValuesList.add(FPSTR(VALUE_MODEM));
@@ -1054,7 +1054,7 @@ void handle_web_interface_configSys()
     bool msg_alert_error=false;
     bool msg_alert_success=false;
     long lbaudlist[] = {9600 ,19200,38400,57600,115200,230400,250000,-1};
-    int bmodemvaluelist[] = {NONE_SLEEP_T,LIGHT_SLEEP_T,MODEM_SLEEP_T, -1};
+    int bmodemvaluelist[] = {WIFI_NONE_SLEEP,WIFI_LIGHT_SLEEP,WIFI_MODEM_SLEEP, -1};
     const __FlashStringHelper  *smodemdisplaylist[]= {FPSTR(VALUE_NONE),FPSTR(VALUE_LIGHT),FPSTR(VALUE_MODEM),FPSTR(VALUE_MODEM)};
     STORESTRINGS_CLASS KeysList ;
     STORESTRINGS_CLASS ValuesList ;
@@ -1119,7 +1119,7 @@ void handle_web_interface_configSys()
                 KeysList.add(FPSTR(KEY_BAUD_RATE_STATUS));
                 ValuesList.add(FPSTR(VALUE_HAS_ERROR));
             }
-            if (!(bsleepmode==NONE_SLEEP_T ||bsleepmode==LIGHT_SLEEP_T ||bsleepmode==MODEM_SLEEP_T )) {
+            if (!(bsleepmode==WIFI_NONE_SLEEP ||bsleepmode==WIFI_LIGHT_SLEEP ||bsleepmode==WIFI_MODEM_SLEEP )) {
                 msg_alert_error=true;
                 smsg.concat(F("Error: value for sleeping mode is not correct<BR>"));
                 KeysList.add(FPSTR(KEY_SLEEP_MODE_STATUS));
@@ -1363,7 +1363,7 @@ void handle_web_interface_configAP()
     byte gw_sav[4];
     byte msk_sav[4];
     int ipos;
-    int inetworkvaluelist []= {PHY_MODE_11B,PHY_MODE_11G,-1};
+    int inetworkvaluelist []= {WIFI_PHY_MODE_11B,WIFI_PHY_MODE_11G,-1};
     const __FlashStringHelper  * inetworkdisplaylist []= {FPSTR(VALUE_11B),FPSTR(VALUE_11G),FPSTR(VALUE_11B)};
     int iauthvaluelist[] = {AUTH_OPEN,AUTH_WPA_PSK,AUTH_WPA2_PSK,AUTH_WPA_WPA2_PSK,-1};
     const __FlashStringHelper  * iauthdisplaylist[] = {FPSTR(VALUE_NONE),FPSTR(VALUE_WPA),FPSTR(VALUE_WPA2),FPSTR(VALUE_WPAWPA2)};
@@ -1417,7 +1417,7 @@ void handle_web_interface_configAP()
             }
             //phy mode
             phy_mode_buf  = byte(web_interface->WebServer.arg("NETWORK").toInt());
-            if (!(phy_mode_buf==PHY_MODE_11B||phy_mode_buf==PHY_MODE_11G) ) {
+            if (!(phy_mode_buf==WIFI_PHY_MODE_11B||phy_mode_buf==WIFI_PHY_MODE_11G) ) {
                 msg_alert_error=true;
                 smsg.concat(F("Error: Incorrect network<BR>"));
                 KeysList.add(FPSTR(KEY_NETWORK_OPTION_LIST_STATUS));
@@ -1567,7 +1567,7 @@ void handle_web_interface_configAP()
     //ssid visible ?
     KeysList.add(FPSTR(KEY_IS_SSID_VISIBLE));
     if (visible_buf==1) {
-        ValuesList.add(VALUE_CHECKED);
+        ValuesList.add(FPSTR(VALUE_CHECKED));
     } else {
         ValuesList.add("");
     }
@@ -1629,7 +1629,7 @@ void handle_web_interface_configAP()
     //static IP ?
     KeysList.add(FPSTR(KEY_IS_STATIC_IP));
     if (static_ip_buf==STATIC_IP_MODE) {
-        ValuesList.add(VALUE_CHECKED);
+        ValuesList.add(FPSTR(VALUE_CHECKED));
     } else {
         ValuesList.add("");
     }
@@ -1705,7 +1705,7 @@ void handle_web_interface_configSTA()
     byte msk_sav[4];
     bool revertSTA=false;
     int ipos;
-    int inetworkvaluelist []= {PHY_MODE_11B,PHY_MODE_11G,PHY_MODE_11N,-1};
+    int inetworkvaluelist []= {WIFI_PHY_MODE_11B,WIFI_PHY_MODE_11G,WIFI_PHY_MODE_11N,-1};
     const __FlashStringHelper  * inetworkdisplaylist []= {FPSTR(VALUE_11B),FPSTR(VALUE_11G),FPSTR(VALUE_11N),FPSTR(VALUE_11B)};
     STORESTRINGS_CLASS KeysList ;
     STORESTRINGS_CLASS ValuesList ;
@@ -1760,7 +1760,7 @@ void handle_web_interface_configSTA()
 
             //phy mode
             phy_mode_buf  = byte(web_interface->WebServer.arg("NETWORK").toInt());
-            if (!(phy_mode_buf==PHY_MODE_11B||phy_mode_buf==PHY_MODE_11G||phy_mode_buf==PHY_MODE_11N) ) {
+            if (!(phy_mode_buf==WIFI_PHY_MODE_11B||phy_mode_buf==WIFI_PHY_MODE_11G||phy_mode_buf==WIFI_PHY_MODE_11N) ) {
                 msg_alert_error=true;
                 smsg.concat(F("Error: Incorrect network<BR>"));
                 KeysList.add(FPSTR(KEY_NETWORK_OPTION_LIST_STATUS));
@@ -1900,7 +1900,7 @@ void handle_web_interface_configSTA()
     //static IP ?
     KeysList.add(FPSTR(KEY_IS_STATIC_IP));
     if (static_ip_buf==STATIC_IP_MODE) {
-        ValuesList.add(VALUE_CHECKED);
+        ValuesList.add(FPSTR(VALUE_CHECKED));
     } else {
         ValuesList.add("");
     }
@@ -1960,11 +1960,11 @@ void handle_web_interface_configSTA()
             WiFi.mode(WIFI_AP);
         }
         KeysList.add(FPSTR(KEY_AP_SCAN_VISIBILITY));
-        ValuesList.add(VALUE_ITEM_VISIBLE);
+        ValuesList.add(FPSTR(VALUE_ITEM_VISIBLE));
     } else {
         //no need to do a scan if we are going to restart
         KeysList.add(FPSTR(KEY_AP_SCAN_VISIBILITY));
-        ValuesList.add(VALUE_ITEM_HIDDEN);
+        ValuesList.add(FPSTR(VALUE_ITEM_HIDDEN));
         KeysList.add(FPSTR(KEY_AVAILABLE_AP_NB_ITEMS));
         ValuesList.add(intTostr(0));
     }
@@ -2094,7 +2094,7 @@ void handle_web_settings()
         web_interface->WebServer.sendContent_P(NOT_AUTH_SET);
         return;
     }
-
+	web_interface->blockserial = false;
     //IP+Web
     GetIpWeb(KeysList, ValuesList);
     //mode
@@ -2409,19 +2409,63 @@ void SPIFFSFileupload()
     HTTPUpload& upload = (web_interface->WebServer).upload();
     if(upload.status == UPLOAD_FILE_START) {
         String filename = upload.filename;
+        Serial.println("M117 Start ESP upload");
         web_interface->fsUploadFile = SPIFFS.open(filename, "w");
         filename = String();
+        web_interface->_upload_status= UPLOAD_STATUS_ONGOING;
     } else if(upload.status == UPLOAD_FILE_WRITE) {
+		web_interface->_upload_status= UPLOAD_STATUS_ONGOING;
         if(web_interface->fsUploadFile) {
             web_interface->fsUploadFile.write(upload.buf, upload.currentSize);
         }
     } else if(upload.status == UPLOAD_FILE_END) {
+		web_interface->_upload_status=UPLOAD_STATUS_SUCCESSFUL;
+		Serial.println("M117 End ESP upload");
         if(web_interface->fsUploadFile) {
             web_interface->fsUploadFile.close();
         }
     } else {
-        Serial.println("Cannot open file");
+		web_interface->_upload_status=UPLOAD_STATUS_CANCELLED;
+        Serial.println("M117 Error ESP upload");
     }
+    delay(0);
+}
+
+void SDFileupload()
+{
+	static bool linewrote = false; 
+    HTTPUpload& upload = (web_interface->WebServer).upload();
+    if(upload.status == UPLOAD_FILE_START) {
+		(web_interface->blockserial) = true;
+		linewrote = false;
+		web_interface->_upload_status= UPLOAD_STATUS_ONGOING;
+		Serial.println("M117 Start SD upload");
+        String filename = "M28 " + upload.filename;
+        Serial.println(filename);
+        filename = String();
+    } else if(upload.status == UPLOAD_FILE_WRITE) {
+			web_interface->_upload_status= UPLOAD_STATUS_ONGOING;
+			if (linewrote == false){
+            Serial.write("M117 one line yes\n");
+            Serial.flush();
+            linewrote = true;
+            }
+            
+            //Serial.write(upload.buf, upload.currentSize);
+    } else if(upload.status == UPLOAD_FILE_END) {
+            web_interface->blockserial = false;
+            linewrote = false;
+            web_interface->_upload_status=UPLOAD_STATUS_SUCCESSFUL;
+			Serial.println("M29\n");
+			delay (500);
+			Serial.println("M117 SD upload done\n");
+    } else {
+		web_interface->_upload_status=UPLOAD_STATUS_CANCELLED;
+        Serial.println("M29\n");
+        delay (500);
+        Serial.println("M117 SD upload failed");
+    }
+    delay(0);
 }
 
 #ifdef WEB_UPDATE_FEATURE
@@ -2448,7 +2492,7 @@ void WebUpdateUpload()
         Update.end();
         web_interface->_upload_status=UPLOAD_STATUS_CANCELLED;
     }
-    yield();
+    delay(0);
 }
 
 void handleUpdate()
@@ -2526,6 +2570,15 @@ void handleSDFileList()
     if (!web_interface->is_authenticated()) {
         return;
     }
+     if(web_interface->WebServer.hasArg("action")) {
+        if(web_interface->WebServer.arg("action")=="delete" && web_interface->WebServer.hasArg("filename")) {
+            String filename;
+            web_interface->urldecode(filename,web_interface->WebServer.arg("filename").c_str());
+            filename = "M30 " + filename;
+            //TODO:need a MACRO or helper for this test
+            if((web_interface->blockserial) == false)Serial.println(filename);
+        }
+    }
     String jsonfile = "[";
     for (int i=0; i<web_interface->fileslist.size(); i++) {
         if (i>0) {
@@ -2538,6 +2591,7 @@ void handleSDFileList()
     jsonfile+="]";
     web_interface->WebServer.sendHeader("Cache-Control", "no-cache");
     web_interface->WebServer.send(200, "application/json", jsonfile);
+    web_interface->blockserial = false;
 }
 
 //do a redirect to avoid to many query
@@ -2767,8 +2821,6 @@ void handle_web_command()
         //decode command
         web_interface->urldecode(scmd,web_interface->WebServer.arg("COM").c_str());
         scmd.trim();
-        //send command to serial
-        Serial.println(scmd);
         //give an ack - we need to be polite, right ?
         web_interface->WebServer.send(200,"text/plain","Ok");
         //if it is for ESP module [ESPXXX]<parameter>
@@ -2791,6 +2843,11 @@ void handle_web_command()
                 //if not is not a valid [ESPXXX] command
             }
         }
+        else {
+			 //send command to serial as no need to transfer ESP command
+			 //to avoid any pollution if Uploading file to SDCard
+			 if ((web_interface->blockserial) == false)Serial.println(scmd);
+		}
     }
 }
 
@@ -2856,7 +2913,7 @@ WEBINTERFACE_CLASS::WEBINTERFACE_CLASS (int port):WebServer(port)
     WebServer.on("/UPDATE",HTTP_ANY, handleUpdate,WebUpdateUpload);
 #endif
     WebServer.on("/FILES", HTTP_ANY, handleFileList,SPIFFSFileupload);
-    WebServer.on("/SDFILES", HTTP_ANY, handleSDFileList);
+    WebServer.on("/SDFILES", HTTP_ANY, handleSDFileList,SDFileupload);
     WebServer.on("/LOGIN", HTTP_ANY, handle_login);
     WebServer.on("/PASSWORD", HTTP_ANY, handle_password);
     //Captive portal Feature
@@ -2872,6 +2929,7 @@ WEBINTERFACE_CLASS::WEBINTERFACE_CLASS (int port):WebServer(port)
     answer4M114="X:0.0 Y:0.0 Z:0.000";
     answer4M220="100";
     answer4M221="100";
+    blockserial = false;
     last_temp=system_get_time();
     restartmodule=false;
     //rolling list of 4entries with a maximum of 50 char for each entry

@@ -243,6 +243,9 @@ void CONFIG::print_config()
         Serial.print(F("Mode: "));
         if (byte(bbuf) == CLIENT_MODE) {
             Serial.println(F("Station"));
+            Serial.print(F("Signal: "));
+            Serial.print(100+WiFi.RSSI());
+            Serial.println(F("%"));
         } else if (byte(bbuf)==AP_MODE) {
             Serial.println(F("Access Point"));
         } else {
@@ -301,12 +304,12 @@ void CONFIG::print_config()
     }
 
     if (CONFIG::read_byte(EP_PHY_MODE, &bbuf )) {
-        Serial.print(F("Phy mode: "));
-        if (byte(bbuf)==PHY_MODE_11B) {
+		Serial.print(F("Phy mode: "));
+        if (byte(bbuf)==WIFI_PHY_MODE_11B) {
             Serial.println(F("11b"));
-        } else if (byte(bbuf)==PHY_MODE_11G) {
+        } else if (byte(bbuf)==WIFI_PHY_MODE_11G) {
             Serial.println(F("11g"));
-        } else if (byte(bbuf)==PHY_MODE_11N) {
+        } else if (byte(bbuf)==WIFI_PHY_MODE_11N) {
             Serial.println(F("11n"));
         } else {
             Serial.println(F("???"));
@@ -317,11 +320,11 @@ void CONFIG::print_config()
 
     if (CONFIG::read_byte(EP_SLEEP_MODE, &bbuf )) {
         Serial.print(F("Sleep mode: "));
-        if (byte(bbuf)==NONE_SLEEP_T) {
+        if (byte(bbuf)==WIFI_NONE_SLEEP) {
             Serial.println(F("None"));
-        } else if (byte(bbuf)==LIGHT_SLEEP_T) {
+        } else if (byte(bbuf)==WIFI_LIGHT_SLEEP) {
             Serial.println(F("Light"));
-        } else if (byte(bbuf)==MODEM_SLEEP_T) {
+        } else if (byte(bbuf)==WIFI_MODEM_SLEEP) {
             Serial.println(F("Modem"));
         } else {
             Serial.println(F("???"));
@@ -456,4 +459,18 @@ void CONFIG::print_config()
 #else
     Serial.println(F("Disabled"));
 #endif
+    Serial.print(F("Target Firmware: "));
+#if FIRMWARE_TARGET == REPETIER
+    Serial.println(F("Repetier"));
+#elif FIRMWARE_TARGET == REPETIER4DV
+    Serial.println(F("Repetier for DaVinci"));
+#elif FIRMWARE_TARGET == MALRLIN
+    Serial.println(F("Marlin"));
+#elif FIRMWARE_TARGET == SMOOTHIEWARE
+    Serial.println(F("Smoothieware"));
+#else
+    Serial.println(F("???"));
+#endif
+ 
+    
 }
